@@ -1,0 +1,30 @@
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environments
+env/
+venv/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# Ignore VSCode settings
+.vscode/
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore data files
+data/*.csv
+
+# Ignore log files
+*.log
+
+# Ignore compiled Jupyter notebooks (if any are used)
+*.ipynb_checkpoints/
+
+# Ignore node_modules (if frontend uses JavaScript/Node.js)
+frontend/node_modules/

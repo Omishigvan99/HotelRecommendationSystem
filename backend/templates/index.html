@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Hotel Search</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            /* Spinner style */
+            .spinner {
+                border: 4px solid rgba(0, 0, 0, 0.1);
+                border-left-color: #4f46e5;
+                border-radius: 50%;
+                width: 36px;
+                height: 36px;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </head>
+    <body class="bg-gray-100">
+        <div class="container mx-auto p-6 bg-white rounded shadow-md">
+            <h1 class="text-2xl font-semibold text-center mb-4">
+                Search for Hotels
+            </h1>
+            <div class="flex justify-center mb-4">
+                <select id="country" class="border rounded p-2 mr-2">
+                    <option value="">Select Country</option>
+                    <option value="Italy">Italy</option>
+                    <option value="France">France</option>
+                    <option value="Spain">Spain</option>
+                    <option value="UK">UK</option>
+                    <option value="Netherlands">Netherlands</option>
+                    <option value="Austria">Austria</option>
+                </select>
+                <input
+                    type="text"
+                    id="description"
+                    class="border rounded p-2 mr-2"
+                    placeholder="Enter Description"
+                />
+                <button
+                    id="search"
+                    class="bg-green-500 text-white rounded p-2 hover:bg-green-600"
+                >
+                    Search
+                </button>
+            </div>
+
+            <!-- Loading Spinner (initially hidden) -->
+            <div id="loading" class="flex justify-center mb-4" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+
+            <div id="results" class="results"></div>
+        </div>
+
+        <script>
+            document
+                .getElementById("search")
+                .addEventListener("click", function () {
+                    const country = document.getElementById("country").value;
+                    const description =
+                        document.getElementById("description").value;
+
+                    // Show loading spinner
+                    document.getElementById("loading").style.display = "flex";
+
+                    // Create the URL with query parameters
+                    let url = "/api/recommend?";
+                    if (country) {
+                        url += `location=${encodeURIComponent(country)}&`;
+                    }
+                    if (description) {
+                        url += `description=${encodeURIComponent(
+                            description
+                        )}&`;
+                    }
+
+                    // Fetch hotel data from the API
+                    fetch(url)
+                        .then((response) => response.json())
+                        .then((hotels) => {
+                            // Hide loading spinner
+                            document.getElementById("loading").style.display =
+                                "none";
+
+                            // Clear previous results
+                            const resultsDiv =
+                                document.getElementById("results");
+                            resultsDiv.innerHTML = "";
+
+                            // Display the hotels in the results section
+                            if (hotels.length > 0) {
+                                hotels.forEach((hotel) => {
+                                    const hotelElement = `
+                                <div class="p-4 mb-4 border rounded shadow">
+                                    <h3 class="text-xl font-bold text-blue-600">${hotel.Hotel_Name}</h3>
+                                    <p><strong>Average Score:</strong> ${hotel.Average_Score}</p>
+                                    <p><strong>Address:</strong> ${hotel.Hotel_Address}</p>
+                                </div>
+                            `;
+                                    resultsDiv.innerHTML += hotelElement;
+                                });
+                            } else {
+                                resultsDiv.innerHTML =
+                                    "<p>No hotels found.</p>";
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error fetching hotels:", error);
+                            const resultsDiv =
+                                document.getElementById("results");
+                            resultsDiv.innerHTML =
+                                "<p>Error loading hotels.</p>";
+
+                            // Hide loading spinner
+                            document.getElementById("loading").style.display =
+                                "none";
+                        });
+                });
+        </script>
+    </body>
+</html>
